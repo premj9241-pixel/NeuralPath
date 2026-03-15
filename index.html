@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuralPath — AI Career Guidance</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#04091a;--bg2:#070f24;--surface:rgba(255,255,255,0.04);--surface2:rgba(255,255,255,0.07);
+  --glass:rgba(8,20,55,0.55);--glass2:rgba(12,28,70,0.65);
+  --border:rgba(100,160,255,0.12);--border2:rgba(100,160,255,0.22);--border3:rgba(100,160,255,0.35);
+  --blue:#4d8eff;--blue2:#2563eb;--blue3:#60a5fa;--cyan:#22d3ee;--teal:#14b8a6;
+  --indigo:#818cf8;--violet:#a78bfa;
+  --glow:rgba(77,142,255,0.4);--glow2:rgba(34,211,238,0.25);
+  --text:#ddeeff;--text2:#7a9ec8;--text3:#42628c;
+  --white:#ffffff;--success:#34d399;--warning:#fbbf24;--danger:#f87171;
+  --radius:16px;--radius-sm:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── ANIMATED MESH BG ── */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(80px);animation:orbFloat 12s ease-in-out infinite;}
+.bg-orb:nth-child(1){width:700px;height:700px;top:-200px;left:-200px;background:radial-gradient(circle,rgba(37,99,235,0.22),transparent 70%);animation-duration:14s;}
+.bg-orb:nth-child(2){width:500px;height:500px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(20,184,166,0.16),transparent 70%);animation-duration:10s;animation-delay:-4s;}
+.bg-orb:nth-child(3){width:400px;height:400px;top:40%;left:50%;background:radial-gradient(circle,rgba(99,102,241,0.12),transparent 70%);animation-duration:16s;animation-delay:-7s;}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(100,160,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(100,160,255,0.04) 1px,transparent 1px);background-size:60px 60px;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-40px) scale(1.05)}66%{transform:translate(-20px,30px) scale(0.97)}}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:rgba(77,142,255,0.3);border-radius:3px}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2rem;height:60px;
+  background:rgba(4,9,26,0.7);
+  backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid var(--border2);
+  box-shadow:0 1px 0 rgba(255,255,255,0.04),0 4px 30px rgba(0,0,0,0.3);
+}
+.nav-logo{display:flex;align-items:center;gap:0.55rem;font-family:'Instrument Serif',serif;font-size:1.3rem;font-style:italic;color:var(--white);cursor:pointer;user-select:none;}
+.nav-logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:0.85rem;box-shadow:0 0 18px var(--glow);}
+.nav-pills{display:flex;gap:0.2rem;background:rgba(255,255,255,0.04);padding:0.28rem;border-radius:11px;border:1px solid var(--border);}
+.nav-tab{padding:0.42rem 1rem;border-radius:8px;cursor:pointer;font-size:0.79rem;font-weight:600;border:none;background:transparent;color:var(--text2);transition:all 0.22s;display:flex;align-items:center;gap:0.38rem;font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap;}
+.nav-tab:hover{color:var(--text);background:rgba(255,255,255,0.06)}
+.nav-tab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:var(--white);box-shadow:0 2px 14px var(--glow);}
+.nav-live{display:flex;align-items:center;gap:0.4rem;font-size:0.69rem;font-family:'JetBrains Mono',monospace;color:var(--success);background:rgba(52,211,153,0.08);padding:0.27rem 0.7rem;border-radius:20px;border:1px solid rgba(52,211,153,0.18);}
+.nav-live::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--success);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ── MAIN ── */
+main{padding-top:60px;min-height:100vh;position:relative;z-index:1;}
+.tab-panel{display:none;animation:tabIn 0.4s cubic-bezier(.4,0,.2,1);}
+.tab-panel.active{display:block;}
+@keyframes tabIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+
+/* ── GLASS UTILITY ── */
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border:1px solid var(--border2);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.06);}
+.glass2{background:var(--glass2);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--border2);box-shadow:0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);}
+.grad{background:linear-gradient(135deg,var(--blue3),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.grad2{background:linear-gradient(135deg,var(--indigo),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ── BTNS ── */
+.btn{padding:0.7rem 1.6rem;border-radius:9px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.875rem;font-weight:700;transition:all 0.22s;display:inline-flex;align-items:center;gap:0.45rem;}
+.btn-primary{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 4px 20px var(--glow);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--glow);}
+.btn-glass{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border2);backdrop-filter:blur(10px);}
+.btn-glass:hover{background:rgba(255,255,255,0.1);border-color:var(--border3);}
+.btn-outline{background:transparent;color:var(--blue3);border:1.5px solid rgba(77,142,255,0.35);}
+.btn-outline:hover{background:rgba(77,142,255,0.08);border-color:var(--blue);}
+.btn-success{background:linear-gradient(135deg,#059669,var(--teal));color:#fff;box-shadow:0 4px 16px rgba(20,184,166,0.3);}
+.btn-success:hover{transform:translateY(-2px);}
+.btn-sm{padding:0.45rem 1rem;font-size:0.78rem;border-radius:7px;}
+.btn-xs{padding:0.32rem 0.7rem;font-size:0.72rem;border-radius:6px;}
+
+/* ── SECTION ── */
+.section{padding:2.5rem 2.5rem;max-width:1200px;margin:0 auto;}
+.section-tag{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--blue3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.6rem;}
+.section-tag::before{content:'';width:14px;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:1px;}
+.section-title{font-family:'Instrument Serif',serif;font-size:clamp(1.8rem,3vw,2.4rem);color:var(--white);line-height:1.12;letter-spacing:-0.01em;}
+.section-desc{margin-top:0.6rem;color:var(--text2);font-size:0.92rem;line-height:1.72;max-width:560px;}
+.section-header{margin-bottom:2rem;}
+
+/* ══════════════════════════════
+   HOME TAB
+══════════════════════════════ */
+.hero{min-height:calc(100vh - 60px);display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:3rem;padding:3rem 2.5rem 2.5rem;max-width:1300px;margin:0 auto;}
+
+.hero-eyebrow{display:inline-flex;align-items:center;gap:0.45rem;background:rgba(77,142,255,0.08);border:1px solid rgba(77,142,255,0.22);border-radius:20px;padding:0.3rem 0.9rem;font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--blue3);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:1.3rem;animation:fadeUp 0.5s ease both;}
+.hero h1{font-family:'Instrument Serif',serif;font-size:clamp(2.6rem,5vw,4.5rem);line-height:1.06;letter-spacing:-0.025em;color:var(--white);animation:fadeUp 0.5s 0.08s ease both;}
+.hero-sub{margin-top:1.2rem;font-size:1rem;color:var(--text2);line-height:1.78;max-width:480px;animation:fadeUp 0.5s 0.14s ease both;}
+.hero-actions{margin-top:2rem;display:flex;gap:0.75rem;flex-wrap:wrap;animation:fadeUp 0.5s 0.2s ease both;}
+.hero-stats{margin-top:2.4rem;display:flex;gap:2rem;animation:fadeUp 0.5s 0.28s ease both;}
+.stat-n{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--white);line-height:1;}
+.stat-n span{font-size:1.2rem;color:var(--blue3);}
+.stat-l{font-size:0.7rem;color:var(--text3);margin-top:0.18rem;text-transform:uppercase;letter-spacing:0.08em;}
+
+/* HERO VISUAL */
+.hero-visual{animation:fadeIn 0.8s 0.4s ease both;position:relative;}
+.hero-card{border-radius:20px;padding:1.6rem;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(77,142,255,0.06) 60deg,transparent 120deg);animation:rotateBg 20s linear infinite;pointer-events:none;}
+@keyframes rotateBg{to{transform:rotate(360deg)}}
+.hc-title{font-size:0.73rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.2rem;}
+.cp-list{display:flex;flex-direction:column;gap:0.55rem;}
+.cp-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:0.75rem 0.9rem;transition:all 0.2s;cursor:pointer;}
+.cp-item:hover{border-color:var(--blue);background:rgba(77,142,255,0.07);transform:translateX(3px);}
+.cp-left{display:flex;align-items:center;gap:0.7rem;}
+.cp-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.cp-name{font-size:0.84rem;font-weight:600;color:var(--text);}
+.cp-tag{font-size:0.66rem;color:var(--text3);}
+.cp-sal{font-family:'JetBrains Mono',monospace;font-size:0.71rem;color:var(--cyan);}
+.dbar{height:3px;width:52px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:0.25rem;overflow:hidden;}
+.dbar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));}
+.float-tag{position:absolute;bottom:-1rem;right:-0.8rem;background:linear-gradient(135deg,var(--blue2),var(--blue));border-radius:10px;padding:0.7rem 1rem;box-shadow:0 8px 24px var(--glow);font-size:0.78rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:0.4rem;}
+
+/* FEATURE CARDS */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;padding:0 2.5rem 4rem;max-width:1200px;margin:0 auto;}
+.feat-card{border-radius:var(--radius);padding:1.6rem 1.4rem;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;}
+.feat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));transform:scaleX(0);transition:transform 0.3s;transform-origin:left;}
+.feat-card:hover{transform:translateY(-5px);border-color:var(--border3) !important;box-shadow:0 16px 48px rgba(0,0,0,0.4);}
+.feat-card:hover::after{transform:scaleX(1);}
+.fc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;margin-bottom:1rem;}
+.fc-title{font-size:0.96rem;font-weight:700;color:var(--white);margin-bottom:0.32rem;}
+.fc-desc{font-size:0.79rem;color:var(--text2);line-height:1.6;margin-bottom:1rem;}
+.fc-link{font-size:0.78rem;color:var(--blue3);font-weight:600;}
+
+/* TICKER */
+.ticker{overflow:hidden;padding:0.9rem 0;background:rgba(255,255,255,0.02);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.ticker-track{display:flex;animation:tick 30s linear infinite;white-space:nowrap;}
+.ticker-item{flex-shrink:0;padding:0 2.5rem;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+.ticker-item.accent{color:var(--blue3);}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:0 2.5rem;border-radius:16px;overflow:hidden;border:1px solid var(--border);}
+.stats-bar-item{padding:1.5rem 2rem;text-align:center;background:rgba(255,255,255,0.02);border-right:1px solid var(--border);position:relative;}
+.stats-bar-item:last-child{border-right:none;}
+.sbi-val{font-family:'Instrument Serif',serif;font-size:2rem;color:var(--white);}
+.sbi-val span{font-size:1.2rem;color:var(--cyan);}
+.sbi-label{font-size:0.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem;}
+
+/* ══════════════════════════════
+   QUIZ TAB
+══════════════════════════════ */
+.quiz-layout{display:grid;grid-template-columns:250px 1fr;gap:1.8rem;max-width:1040px;margin:0 auto;padding:2.5rem;}
+.quiz-sidebar{position:sticky;top:80px;align-self:start;}
+.qprog-card{border-radius:var(--radius);padding:1.4rem;}
+.qprog-title{font-size:0.7rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;}
+.qp-list{display:flex;flex-direction:column;gap:0.38rem;}
+.qp-s{display:flex;align-items:center;gap:0.65rem;padding:0.5rem 0.7rem;border-radius:8px;font-size:0.8rem;color:var(--text3);transition:all 0.18s;}
+.qp-s.done{color:var(--success);}
+.qp-s.active{color:var(--white);background:rgba(255,255,255,0.06);font-weight:600;}
+.qp-dot{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;font-weight:700;}
+.qp-s.done .qp-dot{background:var(--success);border-color:var(--success);color:#fff;}
+.qp-s.active .qp-dot{border-color:var(--blue);color:var(--blue);}
+.qpbar-wrap{margin-bottom:1.3rem;}
+.qpbar-row{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text3);margin-bottom:0.36rem;}
+.qpbar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.qpbar-fill{height:100%;background:linear-gradient(90deg,var(--blue2),var(--cyan));border-radius:2px;transition:width 0.45s cubic-bezier(.4,0,.2,1);}
+.qcard{border-radius:var(--radius);padding:2.2rem;min-height:400px;display:flex;flex-direction:column;}
+.qpanel{display:none;flex:1;flex-direction:column;}
+.qpanel.active{display:flex;animation:fadeUp 0.3s ease;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--blue3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.85rem;}
+.q-txt{font-family:'Instrument Serif',serif;font-size:1.4rem;color:var(--white);line-height:1.28;margin-bottom:0.38rem;}
+.q-hint{font-size:0.78rem;color:var(--text3);margin-bottom:1.5rem;}
+.q-opts{display:flex;flex-direction:column;gap:0.55rem;flex:1;}
+.q-opt{display:flex;align-items:center;gap:0.85rem;padding:0.85rem 1rem;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;transition:all 0.18s;font-size:0.84rem;color:var(--text);font-weight:500;background:rgba(255,255,255,0.02);}
+.q-opt:hover{border-color:var(--blue);background:rgba(77,142,255,0.07);}
+.q-opt.selected{border-color:var(--blue);background:rgba(77,142,255,0.12);color:var(--white);}
+.q-radio{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;transition:all 0.18s;display:flex;align-items:center;justify-content:center;}
+.q-opt.selected .q-radio{background:var(--blue);border-color:var(--blue);}
+.q-opt.selected .q-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;}
+.q-ei{font-size:1.1rem;flex-shrink:0;}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.6rem;padding-top:1.2rem;border-top:1px solid var(--border);}
+.q-back{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text2);padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-size:0.78rem;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.18s;}
+.q-back:hover{border-color:var(--border2);color:var(--text);}
+.quiz-res-wrap{display:none;animation:scaleIn 0.45s ease;}
+.quiz-res-wrap.active{display:block;}
+.res-hero{text-align:center;padding:1.8rem 1rem 1.4rem;}
+.res-big-emoji{font-size:3.8rem;margin-bottom:0.9rem;display:block;}
+.res-lbl{font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--blue3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.38rem;}
+.res-title{font-family:'Instrument Serif',serif;font-size:2.3rem;color:var(--white);margin-bottom:0.7rem;}
+.res-desc{color:var(--text2);font-size:0.9rem;line-height:1.72;max-width:490px;margin:0 auto 1.2rem;}
+.res-tags{display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;margin-bottom:1.7rem;}
+.res-tag{background:rgba(77,142,255,0.1);border:1px solid var(--border2);color:var(--blue3);padding:0.25rem 0.65rem;border-radius:20px;font-size:0.7rem;font-family:'JetBrains Mono',monospace;}
+.res-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;max-width:420px;margin:0 auto 1.6rem;}
+.rm-box{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:0.8rem;text-align:center;}
+.rm-v{font-family:'Instrument Serif',serif;font-size:1.45rem;color:var(--white);}
+.rm-k{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.18rem;}
+
+/* ══════════════════════════════
+   SKILLS TAB
+══════════════════════════════ */
+.skill-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;}
+.skill-cat{border-radius:var(--radius);padding:1.5rem;}
+.skill-cat-hd{display:flex;align-items:center;gap:0.7rem;margin-bottom:1.2rem;}
+.skill-cat-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.skill-cat-name{font-weight:700;color:var(--white);font-size:0.9rem;}
+.skill-cat-sub{font-size:0.73rem;color:var(--text3);}
+.skill-item{margin-bottom:0.95rem;}
+.skill-item-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.38rem;}
+.skill-name{font-size:0.81rem;font-weight:600;color:var(--text);}
+.skill-dots{display:flex;gap:4px;}
+.sdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);cursor:pointer;transition:all 0.18s;}
+.sdot.filled{background:var(--blue);}
+.sdot:hover{background:var(--blue3);transform:scale(1.25);}
+.sbar{height:3px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue2),var(--blue));transition:width 0.55s cubic-bezier(.4,0,.2,1);}
+.slbl{font-size:0.67rem;color:var(--text3);margin-top:0.2rem;}
+.skill-submit{margin-top:1.6rem;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-radius:var(--radius);flex-wrap:wrap;gap:1rem;}
+.score-wrap{display:flex;align-items:center;gap:0.85rem;}
+.score-ring{position:relative;width:64px;height:64px;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--white);}
+.score-level{font-size:0.9rem;font-weight:700;color:var(--white);}
+.score-sub{font-size:0.73rem;color:var(--text3);}
+
+/* ══════════════════════════════
+   RECOMMENDATIONS TAB
+══════════════════════════════ */
+.recs-wrap{display:grid;grid-template-columns:240px 1fr;gap:1.8rem;padding:2.5rem;max-width:1200px;margin:0 auto;}
+.filter-panel{position:sticky;top:80px;align-self:start;}
+.fcard{border-radius:var(--radius);padding:1.3rem;}
+.fsec{margin-bottom:1.2rem;}
+.fsec:last-child{margin-bottom:0;}
+.flbl{font-size:0.69rem;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.65rem;display:block;}
+.fchips{display:flex;flex-wrap:wrap;gap:0.32rem;}
+.chip{padding:0.28rem 0.65rem;border-radius:20px;border:1px solid var(--border);font-size:0.73rem;cursor:pointer;color:var(--text2);transition:all 0.18s;background:transparent;}
+.chip:hover{border-color:var(--blue);color:var(--blue3);}
+.chip.active{background:rgba(77,142,255,0.14);border-color:var(--blue);color:var(--blue3);}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer;margin-top:0.2rem;}
+.range-row{display:flex;justify-content:space-between;font-size:0.73rem;color:var(--text3);margin-top:0.3rem;}
+.rlist{display:flex;flex-direction:column;gap:1rem;}
+.rec-card{border-radius:var(--radius);padding:1.5rem;display:grid;grid-template-columns:auto 1fr auto;gap:1.2rem;align-items:start;transition:opacity 0.3s ease, transform 0.3s ease, border-color 0.22s, box-shadow 0.22s;cursor:pointer;}
+.rec-card:hover{border-color:var(--border3) !important;box-shadow:0 10px 36px rgba(0,0,0,0.35);transform:translateY(-2px);}
+.rec-card.featured{border-color:rgba(77,142,255,0.3) !important;}
+#recsCount{font-size:0.75rem;font-family:'JetBrains Mono',monospace;color:var(--text3);margin-bottom:1rem;padding:0.3rem 0.6rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;display:inline-block;}
+.rec-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.45rem;flex-shrink:0;}
+.rec-hd{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.32rem;flex-wrap:wrap;}
+.rec-title{font-size:1rem;font-weight:700;color:var(--white);}
+.rbadge{font-size:0.62rem;padding:0.17rem 0.52rem;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+.rbadge-hot{background:rgba(248,113,113,0.13);color:var(--danger);border:1px solid rgba(248,113,113,0.25);}
+.rbadge-new{background:rgba(52,211,153,0.13);color:var(--success);border:1px solid rgba(52,211,153,0.25);}
+.rbadge-match{background:rgba(77,142,255,0.13);color:var(--blue3);border:1px solid rgba(77,142,255,0.25);}
+.rec-co{font-size:0.79rem;color:var(--text2);margin-bottom:0.5rem;}
+.rtags{display:flex;flex-wrap:wrap;gap:0.32rem;margin-bottom:0.65rem;}
+.rtag{background:rgba(255,255,255,0.05);padding:0.18rem 0.52rem;border-radius:6px;font-size:0.69rem;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.rmetrics{display:flex;gap:1.2rem;}
+.rmetric{font-size:0.73rem;color:var(--text3);display:flex;align-items:center;gap:0.26rem;}
+.rmetric strong{color:var(--text);}
+.rec-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.52rem;flex-shrink:0;}
+.rec-sal{font-family:'Instrument Serif',serif;font-size:1.15rem;color:var(--white);}
+.rec-sal small{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.68rem;color:var(--text3);display:block;text-align:right;}
+.mscore{display:flex;flex-direction:column;align-items:center;background:rgba(77,142,255,0.09);border:1px solid rgba(77,142,255,0.18);border-radius:8px;padding:0.42rem 0.65rem;}
+.mscore-pct{font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--blue3);}
+.mscore-lbl{font-size:0.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;}
+
+/* ══════════════════════════════
+   ROLE DETAIL MODAL
+══════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-overlay::before{content:'';position:absolute;inset:0;background:rgba(4,9,26,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.modal{position:relative;z-index:1;width:100%;max-width:740px;max-height:88vh;overflow-y:auto;border-radius:20px;animation:scaleIn 0.3s ease;}
+.modal-close{position:absolute;top:1.2rem;right:1.2rem;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:1.1rem;transition:all 0.18s;z-index:2;}
+.modal-close:hover{background:rgba(255,255,255,0.1);color:var(--white);}
+.modal-hero{padding:2rem 2rem 1.5rem;border-bottom:1px solid var(--border);}
+.modal-hero-top{display:flex;align-items:flex-start;gap:1.2rem;margin-bottom:1.2rem;}
+.modal-icon{width:60px;height:60px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.modal-title{font-family:'Instrument Serif',serif;font-size:1.8rem;color:var(--white);line-height:1.1;}
+.modal-co{font-size:0.85rem;color:var(--text2);margin-top:0.25rem;}
+.modal-badges{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.5rem;}
+.modal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-top:1.2rem;}
+.mstat{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:0.8rem;text-align:center;}
+.mstat-v{font-family:'Instrument Serif',serif;font-size:1.15rem;color:var(--white);}
+.mstat-k{font-size:0.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.15rem;}
+.modal-body{padding:1.5rem 2rem;}
+.modal-section{margin-bottom:1.6rem;}
+.modal-section:last-child{margin-bottom:0;}
+.modal-section-title{font-size:0.8rem;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.8rem;display:flex;align-items:center;gap:0.4rem;}
+.modal-desc{font-size:0.88rem;color:var(--text2);line-height:1.72;}
+.modal-skills-grid{display:flex;flex-wrap:wrap;gap:0.4rem;}
+.mskill{background:rgba(77,142,255,0.1);border:1px solid rgba(77,142,255,0.2);color:var(--blue3);padding:0.28rem 0.7rem;border-radius:7px;font-size:0.73rem;font-family:'JetBrains Mono',monospace;}
+.modal-list{list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+.modal-list li{font-size:0.86rem;color:var(--text2);display:flex;gap:0.6rem;align-items:flex-start;}
+.modal-list li::before{content:'→';color:var(--blue3);flex-shrink:0;margin-top:0.05rem;}
+.day-timeline{display:flex;flex-direction:column;gap:0.6rem;}
+.day-item{display:flex;gap:0.8rem;align-items:flex-start;}
+.day-time{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--blue3);min-width:65px;padding-top:0.08rem;}
+.day-desc{font-size:0.83rem;color:var(--text2);line-height:1.5;}
+.growth-bar{height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;margin-top:0.5rem;}
+.growth-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue2),var(--cyan));}
+.comp-table{width:100%;border-collapse:collapse;}
+.comp-table td,.comp-table th{padding:0.6rem 0.8rem;font-size:0.8rem;border-bottom:1px solid var(--border);text-align:left;}
+.comp-table th{color:var(--text3);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.06em;}
+.comp-table td{color:var(--text2);}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table .highlight{color:var(--white);font-weight:600;}
+
+/* ══════════════════════════════
+   RESOURCES TAB
+══════════════════════════════ */
+.res-layout{padding:2.5rem;max-width:1200px;margin:0 auto;}
+.res-tabs{display:flex;gap:0.3rem;margin-bottom:1.8rem;background:rgba(255,255,255,0.04);padding:0.28rem;border-radius:11px;border:1px solid var(--border);width:fit-content;}
+.rtab{padding:0.42rem 1rem;border-radius:8px;cursor:pointer;border:none;background:transparent;color:var(--text2);font-size:0.79rem;font-weight:600;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:0.36rem;}
+.rtab.active{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;box-shadow:0 2px 12px var(--glow);}
+.rtab:hover:not(.active){background:rgba(255,255,255,0.06);color:var(--text);}
+.rcat{display:none;}
+.rcat.active{display:block;animation:fadeUp 0.3s ease;}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;}
+
+/* Course card with video */
+.course-card{border-radius:var(--radius);overflow:hidden;transition:all 0.25s;cursor:pointer;position:relative;}
+.course-card:hover{transform:translateY(-5px);border-color:var(--border3) !important;box-shadow:0 16px 48px rgba(0,0,0,0.4);}
+.course-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#000;}
+.course-thumb iframe{width:100%;height:100%;border:none;pointer-events:none;}
+.course-thumb-overlay{position:absolute;inset:0;background:rgba(4,9,26,0.5);display:flex;align-items:center;justify-content:center;transition:all 0.25s;cursor:pointer;}
+.course-card:hover .course-thumb-overlay{background:rgba(4,9,26,0.25);}
+.play-btn{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all 0.22s;}
+.course-card:hover .play-btn{background:var(--blue2);border-color:var(--blue);transform:scale(1.1);}
+.course-duration{position:absolute;bottom:0.5rem;right:0.5rem;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);padding:0.18rem 0.45rem;border-radius:4px;font-size:0.67rem;font-family:'JetBrains Mono',monospace;color:#fff;}
+.course-body{padding:1.1rem;}
+.course-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem;}
+.course-icon{font-size:1.3rem;}
+.ctype-badge{font-size:0.63rem;font-family:'JetBrains Mono',monospace;padding:0.18rem 0.5rem;border-radius:6px;text-transform:uppercase;letter-spacing:0.06em;}
+.type-free{background:rgba(52,211,153,0.1);color:var(--success);border:1px solid rgba(52,211,153,0.2);}
+.type-paid{background:rgba(251,191,36,0.1);color:var(--warning);border:1px solid rgba(251,191,36,0.2);}
+.type-cert{background:rgba(77,142,255,0.1);color:var(--blue3);border:1px solid rgba(77,142,255,0.2);}
+.course-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;line-height:1.3;}
+.course-desc{font-size:0.77rem;color:var(--text2);line-height:1.58;margin-bottom:0.8rem;}
+.course-meta{display:flex;justify-content:space-between;align-items:center;}
+.course-meta-l{font-size:0.71rem;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.course-stars{color:var(--warning);font-size:0.7rem;}
+
+/* book/tool cards */
+.item-card{border-radius:var(--radius);padding:1.3rem;transition:all 0.22s;cursor:pointer;position:relative;overflow:hidden;}
+.item-card:hover{transform:translateY(-4px);border-color:var(--border3) !important;box-shadow:0 12px 36px rgba(0,0,0,0.35);}
+.item-card::after{content:'→';position:absolute;bottom:1rem;right:1rem;color:var(--border2);font-size:0.9rem;transition:all 0.18s;}
+.item-card:hover::after{color:var(--blue);transform:translate(2px,-2px);}
+.item-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.8rem;}
+.item-icon{font-size:1.65rem;}
+.item-title{font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;line-height:1.3;}
+.item-desc{font-size:0.77rem;color:var(--text2);line-height:1.58;margin-bottom:0.8rem;}
+.item-meta{display:flex;justify-content:space-between;align-items:center;}
+.item-meta-l{font-size:0.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+.item-stars{color:var(--warning);font-size:0.7rem;}
+
+/* ROADMAP */
+.rm-list{display:flex;flex-direction:column;}
+.rm-item{display:grid;grid-template-columns:auto 1fr;gap:1.2rem;position:relative;}
+.rm-line{display:flex;flex-direction:column;align-items:center;padding-top:0.4rem;}
+.rm-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;border:1px solid var(--border2);background:rgba(77,142,255,0.08);}
+.rm-connector{flex:1;width:1px;background:linear-gradient(to bottom,var(--border2),transparent);min-height:26px;margin:3px 0;}
+.rm-item:last-child .rm-connector{display:none;}
+.rm-content{padding:0 0 1.6rem;}
+.rm-phase{font-size:0.67rem;font-family:'JetBrains Mono',monospace;color:var(--blue3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.26rem;}
+.rm-title{font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.3rem;}
+.rm-dur{font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--success);background:rgba(52,211,153,0.09);border:1px solid rgba(52,211,153,0.18);padding:0.16rem 0.52rem;border-radius:5px;width:fit-content;margin-bottom:0.5rem;}
+.rm-desc{font-size:0.79rem;color:var(--text2);line-height:1.62;margin-bottom:0.65rem;}
+.rm-chips{display:flex;flex-wrap:wrap;gap:0.3rem;}
+.rm-chip{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;font-size:0.67rem;padding:0.17rem 0.48rem;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+
+/* ── VIDEO MODAL ── */
+.vmodal-overlay{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.28s;}
+.vmodal-overlay.open{opacity:1;pointer-events:all;}
+.vmodal-overlay::before{content:'';position:absolute;inset:0;background:rgba(4,9,26,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+.vmodal{position:relative;z-index:1;width:100%;max-width:840px;border-radius:18px;overflow:hidden;animation:scaleIn 0.28s ease;}
+.vmodal-header{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);}
+.vmodal-title{font-weight:700;color:var(--white);font-size:0.95rem;}
+.vmodal-close{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:1rem;transition:all 0.18s;}
+.vmodal-close:hover{background:rgba(255,255,255,0.12);color:var(--white);}
+.vmodal-player{position:relative;aspect-ratio:16/9;}
+.vmodal-player iframe{width:100%;height:100%;border:none;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.6rem;right:1.6rem;z-index:999;border-radius:10px;padding:0.75rem 1.2rem;display:flex;align-items:center;gap:0.7rem;box-shadow:0 8px 28px rgba(0,0,0,0.45);transform:translateY(16px);opacity:0;transition:all 0.26s;pointer-events:none;font-size:0.82rem;color:var(--text);min-width:230px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr;padding:2.5rem 1.5rem 2rem;}
+  .hero-visual{display:none;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);padding:0 1.5rem 3rem;}
+  .quiz-layout,.recs-wrap{grid-template-columns:1fr;padding:1.5rem;}
+  .quiz-sidebar,.filter-panel{display:none;}
+  .skill-grid{grid-template-columns:1fr;}
+  .rgrid{grid-template-columns:repeat(2,1fr);}
+  .rec-card{grid-template-columns:auto 1fr;gap:1rem;}
+  .rec-right{display:none;}
+  .res-layout{padding:1.5rem;}
+  .stats-bar{grid-template-columns:repeat(2,1fr);}
+  .modal-stats{grid-template-columns:repeat(2,1fr);}
+  nav{padding:0 1rem;}
+  .nav-tab span{display:none;}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr;}
+  .rgrid{grid-template-columns:1fr;}
+  .res-metrics{grid-template-columns:1fr;max-width:200px;}
+  .hero-stats{gap:1.3rem;}
+  .modal-body{padding:1.2rem 1rem;}
+  .modal-hero{padding:1.5rem 1rem 1.2rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ANIMATED BG -->
+<div class="bg-mesh">
+  <div class="bg-grid"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="switchTab('home')">
+    <div class="nav-logo-icon">🧠</div>NeuralPath
+  </div>
+  <div class="nav-pills">
+    <button class="nav-tab active" data-tab="home" onclick="switchTab('home')">🏠 <span>Home</span></button>
+    <button class="nav-tab" data-tab="quiz" onclick="switchTab('quiz')">🎯 <span>Career Quiz</span></button>
+    <button class="nav-tab" data-tab="skills" onclick="switchTab('skills')">⚡ <span>Skills</span></button>
+    <button class="nav-tab" data-tab="recs" onclick="switchTab('recs')">💼 <span>Recommendations</span></button>
+    <button class="nav-tab" data-tab="resources" onclick="switchTab('resources')">📚 <span>Resources</span></button>
+  </div>
+  <div class="nav-live">340+ Jobs Live</div>
+</nav>
+
+<main>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div id="tab-home" class="tab-panel active">
+  <div class="hero">
+    <div>
+      <div class="hero-eyebrow">✦ AI-Powered Career Intelligence</div>
+      <h1>Your <span class="grad">AI career</span><br>starts here</h1>
+      <p class="hero-sub">Discover your perfect role in AI. Take our career quiz, assess your skills, and get personalised job recommendations — all in one beautiful platform.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="switchTab('quiz')">🎯 Take Career Quiz</button>
+        <button class="btn btn-glass" onclick="switchTab('skills')">⚡ Assess Skills</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-n"><span id="c1">0</span><span>k+</span></div><div class="stat-l">Careers Guided</div></div>
+        <div><div class="stat-n"><span id="c2">0</span><span>%</span></div><div class="stat-l">Salary Boost</div></div>
+        <div><div class="stat-n"><span id="c3">0</span><span>+</span></div><div class="stat-l">AI Paths</div></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card glass2" style="border-radius:20px;">
+        <div class="hc-title">📊 Top AI Roles — Live Demand</div>
+        <div class="cp-list">
+          <div class="cp-item" onclick="switchTab('recs')">
+            <div class="cp-left"><div class="cp-ic" style="background:rgba(77,142,255,0.15)">🤖</div><div><div class="cp-name">ML Engineer</div><div class="cp-tag">Engineering</div></div></div>
+            <div><div class="cp-sal">$180k avg</div><div class="dbar"><div class="dbar-fill" style="width:92%"></div></div></div>
+          </div>
+          <div class="cp-item" onclick="switchTab('recs')">
+            <div class="cp-left"><div class="cp-ic" style="background:rgba(34,211,238,0.12)">🗣️</div><div><div class="cp-name">LLM Engineer</div><div class="cp-tag">Research & Eng</div></div></div>
+            <div><div class="cp-sal">$210k avg</div><div class="dbar"><div class="dbar-fill" style="width:98%"></div></div></div>
+          </div>
+          <div class="cp-item" onclick="switchTab('recs')">
+            <div class="cp-left"><div class="cp-ic" style="background:rgba(20,184,166,0.12)">📊</div><div><div class="cp-name">Data Scientist</div><div class="cp-tag">Analytics</div></div></div>
+            <div><div class="cp-sal">$145k avg</div><div class="dbar"><div class="dbar-fill" style="width:78%"></div></div></div>
+          </div>
+          <div class="cp-item" onclick="switchTab('recs')">
+            <div class="cp-left"><div class="cp-ic" style="background:rgba(251,191,36,0.12)">🎯</div><div><div class="cp-name">AI Product Manager</div><div class="cp-tag">Product</div></div></div>
+            <div><div class="cp-sal">$160k avg</div><div class="dbar"><div class="dbar-fill" style="width:85%"></div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="float-tag">🚀 12 new roles today</div>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-track">
+      <span class="ticker-item accent">ML Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">LLM Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">Data Scientist</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">AI Researcher</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">NLP Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">MLOps Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">Computer Vision</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">AI Ethics Specialist</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">AI PM</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">ML Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">LLM Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">Data Scientist</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">AI Researcher</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">NLP Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">MLOps Engineer</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">Computer Vision</span><span class="ticker-item">·</span>
+      <span class="ticker-item accent">AI Ethics Specialist</span><span class="ticker-item">·</span>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div style="padding:2rem 2.5rem;">
+    <div class="stats-bar glass" style="border-radius:16px;">
+      <div class="stats-bar-item"><div class="sbi-val"><span id="sc1">0</span><span>k</span></div><div class="sbi-label">Careers Guided</div></div>
+      <div class="stats-bar-item"><div class="sbi-val"><span id="sc2">0</span><span>%</span></div><div class="sbi-label">Avg Salary Growth</div></div>
+      <div class="stats-bar-item"><div class="sbi-val"><span id="sc3">0</span><span>+</span></div><div class="sbi-label">AI Career Paths</div></div>
+      <div class="stats-bar-item"><div class="sbi-val"><span id="sc4">0</span><span>k</span></div><div class="sbi-label">Daily Job Listings</div></div>
+    </div>
+  </div>
+
+  <!-- FEATURE CARDS -->
+  <div class="feat-grid">
+    <div class="feat-card glass" onclick="switchTab('quiz')">
+      <div class="fc-icon" style="background:rgba(77,142,255,0.12)">🎯</div>
+      <div class="fc-title">Career Quiz</div>
+      <div class="fc-desc">6 smart questions to discover which AI career fits your personality, strengths, and goals.</div>
+      <div class="fc-link">Start Quiz →</div>
+    </div>
+    <div class="feat-card glass" onclick="switchTab('skills')">
+      <div class="fc-icon" style="background:rgba(34,211,238,0.1)">⚡</div>
+      <div class="fc-title">Skill Assessment</div>
+      <div class="fc-desc">Rate yourself across 20 technical and soft skills to identify strengths and gaps instantly.</div>
+      <div class="fc-link">Assess Skills →</div>
+    </div>
+    <div class="feat-card glass" onclick="switchTab('recs')">
+      <div class="fc-icon" style="background:rgba(20,184,166,0.1)">💼</div>
+      <div class="fc-title">Career Recommendations</div>
+      <div class="fc-desc">AI-matched roles with full details — salary, responsibilities, required skills, and more.</div>
+      <div class="fc-link">View Matches →</div>
+    </div>
+    <div class="feat-card glass" onclick="switchTab('resources')">
+      <div class="fc-icon" style="background:rgba(251,191,36,0.1)">📚</div>
+      <div class="fc-title">Learning Resources</div>
+      <div class="fc-desc">Video courses, books, tools, and a structured roadmap tailored to your target AI role.</div>
+      <div class="fc-link">Explore →</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ QUIZ ═══════════ -->
+<div id="tab-quiz" class="tab-panel">
+  <div class="quiz-layout">
+    <div class="quiz-sidebar">
+      <div class="qprog-card glass">
+        <div class="qprog-title">Your Progress</div>
+        <div class="qp-list" id="qpList">
+          <div class="qp-s active" data-s="1"><div class="qp-dot">1</div><span>Interests</span></div>
+          <div class="qp-s" data-s="2"><div class="qp-dot">2</div><span>Background</span></div>
+          <div class="qp-s" data-s="3"><div class="qp-dot">3</div><span>Work Style</span></div>
+          <div class="qp-s" data-s="4"><div class="qp-dot">4</div><span>Tech Level</span></div>
+          <div class="qp-s" data-s="5"><div class="qp-dot">5</div><span>Goals</span></div>
+          <div class="qp-s" data-s="6"><div class="qp-dot">6</div><span>Environment</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="qpbar-wrap">
+        <div class="qpbar-row"><span id="qBarLbl">Question 1 of 6</span><span id="qBarPct">0%</span></div>
+        <div class="qpbar"><div class="qpbar-fill" id="qBar" style="width:0%"></div></div>
+      </div>
+      <div class="qcard glass">
+        <div class="qpanel active" id="qp1">
+          <div class="q-num">01 / 06 — Interests</div>
+          <div class="q-txt">What excites you most about working in AI?</div>
+          <div class="q-hint">Choose the option that resonates most naturally.</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">⚙️</span>Building systems that scale to millions in production</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🔭</span>Discovering new algorithms and publishing breakthrough research</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">📈</span>Translating data into business decisions and insights</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🛡️</span>Ensuring AI is safe, fair, and accountable</label>
+          </div>
+          <div class="q-nav"><div></div><button class="btn btn-primary btn-sm" onclick="qNext(1)">Continue →</button></div>
+        </div>
+        <div class="qpanel" id="qp2">
+          <div class="q-num">02 / 06 — Background</div>
+          <div class="q-txt">Which best describes your current background?</div>
+          <div class="q-hint">Honesty gives better results.</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">💻</span>Software / backend engineering — I write production code</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🧮</span>Mathematics, statistics, or physics</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🎨</span>Design, product management, or business strategy</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🌱</span>New to tech — starting fresh with high motivation</label>
+          </div>
+          <div class="q-nav"><button class="q-back" onclick="qBack(2)">← Back</button><button class="btn btn-primary btn-sm" onclick="qNext(2)">Continue →</button></div>
+        </div>
+        <div class="qpanel" id="qp3">
+          <div class="q-num">03 / 06 — Work Style</div>
+          <div class="q-txt">How do you prefer to work day-to-day?</div>
+          <div class="q-hint">Your natural working style matters as much as skills.</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🧪</span>Experimenting — rapid iteration, hypothesis testing</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🔩</span>Engineering — building robust, scalable systems</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🗺️</span>Strategising — defining vision, influencing direction</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🤝</span>Collaborating — bridging technical and business teams</label>
+          </div>
+          <div class="q-nav"><button class="q-back" onclick="qBack(3)">← Back</button><button class="btn btn-primary btn-sm" onclick="qNext(3)">Continue →</button></div>
+        </div>
+        <div class="qpanel" id="qp4">
+          <div class="q-num">04 / 06 — Technical Level</div>
+          <div class="q-txt">How comfortable are you with Python and maths?</div>
+          <div class="q-hint">Be candid — this steers you to the right starting point.</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🏆</span>Strong in both — Python and linear algebra are second nature</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">📐</span>Good at one — solid in code or maths but not both yet</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">📚</span>Learning — started but still building confidence</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🌀</span>Non-technical — understand concepts but don't code</label>
+          </div>
+          <div class="q-nav"><button class="q-back" onclick="qBack(4)">← Back</button><button class="btn btn-primary btn-sm" onclick="qNext(4)">Continue →</button></div>
+        </div>
+        <div class="qpanel" id="qp5">
+          <div class="q-num">05 / 06 — Goals</div>
+          <div class="q-txt">Where do you see yourself in 5 years?</div>
+          <div class="q-hint">Dream big — this shapes your long-term path.</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🏢</span>Leading an AI team at a FAANG or top AI lab</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🚀</span>Co-founding an AI startup</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🎓</span>Publishing at NeurIPS / ICML</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🌍</span>Using AI to solve climate, health, or global challenges</label>
+          </div>
+          <div class="q-nav"><button class="q-back" onclick="qBack(5)">← Back</button><button class="btn btn-primary btn-sm" onclick="qNext(5)">Continue →</button></div>
+        </div>
+        <div class="qpanel" id="qp6">
+          <div class="q-num">06 / 06 — Environment</div>
+          <div class="q-txt">What kind of environment energises you most?</div>
+          <div class="q-hint">Last one — almost there!</div>
+          <div class="q-opts">
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">⚡</span>Fast-paced startup — move fast, high ownership</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🏛️</span>Big tech — structure, scale, world-class colleagues</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🔬</span>Research lab — deep focus, long-term thinking</label>
+            <label class="q-opt"><div class="q-radio"></div><span class="q-ei">🌐</span>Remote & independent — fully self-directed</label>
+          </div>
+          <div class="q-nav"><button class="q-back" onclick="qBack(6)">← Back</button><button class="btn btn-success btn-sm" onclick="showQuizResult()">✨ Get My Result</button></div>
+        </div>
+      </div>
+      <div class="quiz-res-wrap" id="qResWrap">
+        <div class="glass2" style="border-radius:18px;overflow:hidden;">
+          <div class="res-hero">
+            <span class="res-big-emoji" id="rEmoji">🤖</span>
+            <div class="res-lbl">Your Best-Fit Career Path</div>
+            <div class="res-title" id="rTitle">ML Engineer</div>
+            <div class="res-desc" id="rDesc"></div>
+            <div class="res-tags" id="rTags"></div>
+            <div class="res-metrics">
+              <div class="rm-box"><div class="rm-v" id="rSal">$180k</div><div class="rm-k">Avg Salary</div></div>
+              <div class="rm-box"><div class="rm-v" id="rGrowth">38%</div><div class="rm-k">YoY Growth</div></div>
+              <div class="rm-box"><div class="rm-v" id="rMatch">96%</div><div class="rm-k">Your Match</div></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.7rem;justify-content:center;flex-wrap:wrap;padding-bottom:2rem;">
+            <button class="btn btn-primary" onclick="switchTab('recs')">💼 See Job Matches</button>
+            <button class="btn btn-glass" onclick="resetQuiz()">🔄 Retake Quiz</button>
+            <button class="btn btn-glass" onclick="switchTab('resources')">📚 View Roadmap</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SKILLS ═══════════ -->
+<div id="tab-skills" class="tab-panel">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">Skill Assessment</div>
+      <h2 class="section-title">Rate your <span class="grad">skills & proficiency</span></h2>
+      <p class="section-desc">Click the dots to set your level (1 = beginner → 5 = expert). Your score updates live and powers your job recommendations.</p>
+    </div>
+    <div class="skill-grid" id="skillGrid"></div>
+    <div class="skill-submit glass" style="border-radius:var(--radius);">
+      <div class="score-wrap">
+        <div class="score-ring">
+          <svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="5"/><circle cx="32" cy="32" r="26" fill="none" stroke="url(#sg)" stroke-width="5" stroke-linecap="round" id="scoreArc" stroke-dasharray="163.4" stroke-dashoffset="163.4"/><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs></svg>
+          <div class="score-ring-txt" id="scoreNum">0</div>
+        </div>
+        <div><div class="score-level" id="scoreLevel">Set your skill levels</div><div class="score-sub" id="scoreSub">Tap dots above each skill</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSkills()">💾 Save & Get Recommendations</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ RECOMMENDATIONS ═══════════ -->
+<div id="tab-recs" class="tab-panel">
+  <div class="recs-wrap">
+    <div class="filter-panel">
+      <div class="fcard glass">
+        <div class="fsec">
+          <span class="flbl">Role Type</span>
+          <div class="fchips"><div class="chip active" onclick="toggleChip(this)">All</div><div class="chip" onclick="toggleChip(this)">Engineering</div><div class="chip" onclick="toggleChip(this)">Research</div><div class="chip" onclick="toggleChip(this)">Product</div><div class="chip" onclick="toggleChip(this)">Data</div></div>
+        </div>
+        <div class="fsec">
+          <span class="flbl">Experience</span>
+          <div class="fchips"><div class="chip active" onclick="toggleChip(this)">All Levels</div><div class="chip" onclick="toggleChip(this)">Entry</div><div class="chip" onclick="toggleChip(this)">Mid</div><div class="chip" onclick="toggleChip(this)">Senior</div></div>
+        </div>
+        <div class="fsec">
+          <span class="flbl">Max Salary</span>
+          <input type="range" min="80" max="400" value="300" oninput="document.getElementById('salVal').textContent='Up to $'+this.value+'k'"/>
+          <div class="range-row"><span>$80k</span><span id="salVal">Up to $300k</span></div>
+        </div>
+        <div class="fsec">
+          <span class="flbl">Work Mode</span>
+          <div class="fchips"><div class="chip active" onclick="toggleChip(this)">All</div><div class="chip" onclick="toggleChip(this)">Remote</div><div class="chip" onclick="toggleChip(this)">Hybrid</div><div class="chip" onclick="toggleChip(this)">On-site</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section-header" style="margin-bottom:1.3rem;">
+        <div class="section-tag">Recommendations</div>
+        <h2 class="section-title">Your <span class="grad">best-fit roles</span></h2>
+        <p class="section-desc">Click "View Role" for full details — responsibilities, salary breakdown, day-in-the-life, and more.</p>
+      </div>
+      <div class="rlist" id="recsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ RESOURCES ═══════════ -->
+<div id="tab-resources" class="tab-panel">
+  <div class="res-layout">
+    <div class="section-header" style="margin-bottom:1.3rem;">
+      <div class="section-tag">Learning Resources</div>
+      <h2 class="section-title">Your <span class="grad">learning hub</span></h2>
+      <p class="section-desc">Video courses with previews, essential books, tools, and a structured roadmap.</p>
+    </div>
+    <div class="res-tabs">
+      <button class="rtab active" data-rt="courses" onclick="switchResTab('courses')">🎓 Courses</button>
+      <button class="rtab" data-rt="books" onclick="switchResTab('books')">📖 Books</button>
+      <button class="rtab" data-rt="tools" onclick="switchResTab('tools')">🛠️ Tools</button>
+      <button class="rtab" data-rt="roadmap" onclick="switchResTab('roadmap')">🗺️ Roadmap</button>
+    </div>
+    <div class="rcat active" id="rt-courses"><div class="rgrid" id="coursesGrid"></div></div>
+    <div class="rcat" id="rt-books"><div class="rgrid" id="booksGrid"></div></div>
+    <div class="rcat" id="rt-tools"><div class="rgrid" id="toolsGrid"></div></div>
+    <div class="rcat" id="rt-roadmap"><div class="rm-list" id="rmList"></div></div>
+  </div>
+</div>
+
+</main>
+
+<!-- ═══════ ROLE DETAIL MODAL ═══════ -->
+<div class="modal-overlay" id="roleModal" onclick="closeRoleModal(event)">
+  <div class="modal glass2" id="roleModalContent">
+    <button class="modal-close" onclick="closeRoleModalBtn()">✕</button>
+    <div class="modal-hero">
+      <div class="modal-hero-top">
+        <div class="modal-icon" id="mIcon">🤖</div>
+        <div>
+          <div class="modal-title" id="mTitle">ML Engineer</div>
+          <div class="modal-co" id="mCo">OpenAI · San Francisco</div>
+          <div class="modal-badges" id="mBadges"></div>
+        </div>
+      </div>
+      <div class="modal-stats" id="mStats"></div>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- ═══════ VIDEO MODAL ═══════ -->
+<div class="vmodal-overlay" id="videoModal" onclick="closeVideoModal(event)">
+  <div class="vmodal glass2" id="videoModalContent">
+    <div class="vmodal-header">
+      <div class="vmodal-title" id="vModalTitle">Course Preview</div>
+      <button class="vmodal-close" onclick="closeVideoModalBtn()">✕</button>
+    </div>
+    <div class="vmodal-player">
+      <iframe id="vModalIframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast glass" id="toast"><span id="toastIcon">✅</span><span id="toastMsg">Done!</span></div>
+
+<script>
+// ═══ DATA ═══
+const QUIZ_RESULTS=[
+  {emoji:'🤖',title:'ML Engineer',desc:'You thrive building systems that scale. Your mix of engineering instinct and ML knowledge makes you a natural ML Engineer — shipping models end-to-end in production.',tags:['Python','PyTorch','MLOps','System Design','Docker'],salary:'$160k–$280k',growth:'38%',match:'96%'},
+  {emoji:'🔬',title:'AI Researcher',desc:'You\'re driven by first principles. Research is your calling — developing new architectures and publishing at NeurIPS, ICML, and ICLR.',tags:['Deep Learning','Mathematics','JAX','Paper Writing','Transformers'],salary:'$180k–$360k',growth:'29%',match:'92%'},
+  {emoji:'📊',title:'Data Scientist',desc:'You connect numbers to narrative. As a Data Scientist you\'ll bridge raw data and business strategy — building models that drive measurable decisions.',tags:['Python','SQL','Statistics','A/B Testing','Tableau'],salary:'$120k–$220k',growth:'24%',match:'88%'},
+  {emoji:'🎯',title:'AI Product Manager',desc:'You see the big picture. You\'re a natural AI PM — setting product vision, scoping ML features, and shipping products users genuinely love.',tags:['Product Strategy','User Research','Roadmapping','SQL','Stakeholders'],salary:'$145k–$260k',growth:'31%',match:'91%'},
+  {emoji:'⚖️',title:'AI Ethics Specialist',desc:'You believe technology must be trustworthy. This critical field needs people who bridge legal, social, and technical perspectives on AI fairness.',tags:['Policy','Fairness ML','Interpretability','Research','Communication'],salary:'$110k–$200k',growth:'55%',match:'89%'},
+];
+
+const ROLE_DETAILS={
+  'Senior ML Engineer':{
+    icon:'🤖',co:'OpenAI · San Francisco / Remote',
+    color:'rgba(77,142,255,0.15)',
+    badges:[{cls:'rbadge-hot',txt:'🔥 Hot Role'},{cls:'rbadge-match',txt:'96% Match'}],
+    stats:[{v:'$240k–$320k',k:'Salary Range'},{v:'5–8 yrs',k:'Experience'},{v:'Hybrid',k:'Work Mode'},{v:'+38%',k:'YoY Growth'}],
+    overview:'Senior ML Engineers at OpenAI own the full lifecycle of machine learning systems — from research prototypes through to serving billions of API requests. You will work alongside world-class researchers to translate cutting-edge models into reliable, scalable infrastructure that powers GPT-4, DALL·E, and Codex products.',
+    responsibilities:['Design and implement distributed model training pipelines on hundreds of GPUs','Optimise inference latency and throughput for production LLM deployments','Partner with research teams to productionise novel architectures and training techniques','Build robust evaluation frameworks and monitoring for live AI systems','Mentor junior engineers and establish engineering best practices'],
+    skills:['Python','PyTorch','CUDA','Distributed Systems','Kubernetes','MLOps','Triton','Ray','HPC Networking'],
+    dayInLife:[{t:'9:00 AM',d:'Standup with research team — discuss training run progress and blockers'},{t:'10:00 AM',d:'Deep work: profile and optimise transformer inference, reducing latency by 30%'},{t:'12:30 PM',d:'Lunch and knowledge-sharing session on new speculative decoding research'},{t:'2:00 PM',d:'Design review: new scalable evaluation harness for safety testing'},{t:'4:00 PM',d:'Code review, help unblock junior engineers on data pipeline issues'},{t:'5:30 PM',d:'Async: read one research paper, update weekly eng report'}],
+    comp:[{level:'L5 Senior',base:'$200k',equity:'$180k/yr vested',bonus:'$30k',total:'~$410k'},{level:'L6 Staff',base:'$240k',equity:'$240k/yr vested',bonus:'$45k',total:'~$525k'}],
+    growthRate:92
+  },
+  'LLM Engineer':{
+    icon:'🗣️',co:'Anthropic · San Francisco',
+    color:'rgba(34,211,238,0.12)',
+    badges:[{cls:'rbadge-new',txt:'✨ New'},{cls:'rbadge-hot',txt:'🔥 Exploding Field'}],
+    stats:[{v:'$200k–$300k',k:'Salary Range'},{v:'3–6 yrs',k:'Experience'},{v:'On-site',k:'Work Mode'},{v:'+52%',k:'YoY Growth'}],
+    overview:'LLM Engineers at Anthropic build the technical infrastructure that makes Claude — and the field of safe AI — possible. You will fine-tune large language models using RLHF and constitutional AI techniques, build evaluation systems, and work directly on the models that interact with millions of users every day.',
+    responsibilities:['Fine-tune foundation models using RLHF, DPO, and Constitutional AI','Implement efficient training infrastructure for multi-billion parameter models','Design and run large-scale human preference data collection pipelines','Build comprehensive model evaluation and red-teaming frameworks','Research and implement new alignment techniques and safety mechanisms'],
+    skills:['Python','JAX','Transformers','RLHF','Fine-tuning','Evaluation','Constitutional AI','TPUs','Distributed Training'],
+    dayInLife:[{t:'9:30 AM',d:'Fine-tuning run review — analyse reward model metrics overnight'},{t:'11:00 AM',d:'Alignment team sync: review RLHF reward hacking issues in Claude 4'},{t:'1:00 PM',d:'Lunch — weekly safety research reading group'},{t:'2:30 PM',d:'Implement new DPO variant, run ablations on smaller model'},{t:'4:30 PM',d:'Red-teaming session: probe new model for jailbreak vulnerabilities'},{t:'6:00 PM',d:'Document findings, prep slides for all-hands tomorrow'}],
+    comp:[{level:'Mid-Senior',base:'$210k',equity:'$150k/yr vested',bonus:'$25k',total:'~$385k'},{level:'Senior',base:'$260k',equity:'$200k/yr vested',bonus:'$40k',total:'~$500k'}],
+    growthRate:98
+  },
+  'Staff Data Scientist':{
+    icon:'📊',co:'Stripe · Remote',
+    color:'rgba(20,184,166,0.12)',
+    badges:[{cls:'rbadge-match',txt:'✅ Great Match'}],
+    stats:[{v:'$180k–$260k',k:'Salary Range'},{v:'6–10 yrs',k:'Experience'},{v:'Remote',k:'Work Mode'},{v:'+22%',k:'YoY Growth'}],
+    overview:'Staff Data Scientists at Stripe sit at the intersection of product, engineering, and finance. You\'ll work with petabytes of transaction data to build models that detect fraud, optimise payment acceptance rates, and shape product decisions impacting millions of businesses worldwide.',
+    responsibilities:['Lead company-wide A/B testing strategy and causal inference frameworks','Build fraud detection models processing 500M+ transactions per day','Partner with product teams to define metrics and instrument new features','Drive data strategy for Stripe\'s ML platform and feature store','Mentor a team of 4–6 data scientists across the payments org'],
+    skills:['Python','SQL','Causal Inference','A/B Testing','Spark','Scikit-learn','DBT','Looker','Statistics'],
+    dayInLife:[{t:'9:00 AM',d:'Review overnight fraud alerts, check model performance dashboards'},{t:'10:30 AM',d:'XFN meeting with Product and Risk on new payment method launch'},{t:'12:00 PM',d:'Lunch — catch up on Slack, review PRs from team'},{t:'1:30 PM',d:'Deep work: causal analysis of pricing experiment results'},{t:'3:30 PM',d:'1:1s with two junior data scientists — career development focus'},{t:'5:00 PM',d:'Write up analysis, share findings to Stripe\'s #data Slack channel'}],
+    comp:[{level:'Staff DS L6',base:'$190k',equity:'$120k/yr vested',bonus:'$25k',total:'~$335k'},{level:'Principal DS L7',base:'$230k',equity:'$160k/yr vested',bonus:'$35k',total:'~$425k'}],
+    growthRate:78
+  },
+  'AI Product Manager':{
+    icon:'🎯',co:'Google DeepMind · London',
+    color:'rgba(251,191,36,0.12)',
+    badges:[{cls:'rbadge-match',txt:'✅ Great Match'}],
+    stats:[{v:'$160k–$220k',k:'Salary Range'},{v:'4–7 yrs',k:'Experience'},{v:'Hybrid',k:'Work Mode'},{v:'+31%',k:'YoY Growth'}],
+    overview:'AI Product Managers at Google DeepMind define the product vision for some of the world\'s most impactful AI research and products — including Gemini, AlphaFold, and DeepMind for Science. You bridge world-class researchers and real-world impact, shaping how AI benefits humanity.',
+    responsibilities:['Define product strategy for AI products used by researchers and consumers','Work with research teams to identify highest-impact paths from lab to product','Own the roadmap for AI features across Google\'s product suite','Conduct user research, define success metrics, and drive GTM strategy','Align executive stakeholders across Google, Alphabet, and external partners'],
+    skills:['Product Strategy','SQL','User Research','OKRs','Roadmapping','ML Literacy','Data Analysis','Stakeholder Management'],
+    dayInLife:[{t:'9:00 AM',d:'Gemini feature prioritisation review with engineering leads'},{t:'11:00 AM',d:'User research session: enterprise customers using Gemini API'},{t:'1:00 PM',d:'Lunch — team offsite planning for Q3 launch'},{t:'2:00 PM',d:'Write PRD for new multimodal feature, align with research on feasibility'},{t:'4:00 PM',d:'Exec review: present Q2 metrics and Q3 roadmap to DeepMind leadership'},{t:'5:30 PM',d:'Async: review competitor analysis, respond to team questions'}],
+    comp:[{level:'PM L5',base:'$170k',equity:'$100k/yr vested',bonus:'$30k',total:'~$300k'},{level:'Sr PM L6',base:'$210k',equity:'$140k/yr vested',bonus:'$40k',total:'~$390k'}],
+    growthRate:85
+  },
+  'Computer Vision Engineer':{
+    icon:'👁️',co:'Tesla Autopilot · Palo Alto',
+    color:'rgba(139,92,246,0.12)',
+    badges:[{cls:'rbadge-hot',txt:'🔥 Hot Role'}],
+    stats:[{v:'$190k–$280k',k:'Salary Range'},{v:'3–7 yrs',k:'Experience'},{v:'On-site',k:'Work Mode'},{v:'+27%',k:'YoY Growth'}],
+    overview:'Computer Vision Engineers on Tesla Autopilot work on one of the most consequential CV systems ever built — the neural network that drives Teslas on roads globally. You\'ll develop models for object detection, depth estimation, and scene understanding from multi-camera video that runs entirely on Tesla\'s custom FSD chip.',
+    responsibilities:['Develop and train multi-task neural networks for real-time object detection and segmentation','Build 3D reconstruction and depth estimation pipelines from monocular cameras','Optimise models for deployment on Tesla\'s custom FSD (Full Self-Driving) chip','Run large-scale active learning loops on petabytes of driving data','Investigate edge cases from the real-world fleet through Autopilot data analysis'],
+    skills:['PyTorch','CUDA','Computer Vision','Object Detection','3D Vision','C++','TensorRT','ONNX','Sensor Fusion'],
+    dayInLife:[{t:'9:00 AM',d:'Fleet data review — investigate FN (false negative) cases from overnight'},{t:'10:30 AM',d:'Training run kickoff: new BEV (Bird\'s Eye View) backbone architecture'},{t:'1:00 PM',d:'Lunch — team deep-dive into recent CVPR papers on 3D detection'},{t:'2:30 PM',d:'FSD chip optimisation: profile and quantise detection head to hit latency target'},{t:'4:00 PM',d:'Shadow mode evaluation: compare model v4.2 vs v4.3 on 100k clips'},{t:'5:30 PM',d:'Document model card for upcoming OTA software release'}],
+    comp:[{level:'Senior CV Eng',base:'$200k',equity:'$80k/yr vested + Tesla Stock',bonus:'$20k',total:'~$300k'},{level:'Staff CV Eng',base:'$240k',equity:'$120k/yr vested',bonus:'$30k',total:'~$390k'}],
+    growthRate:82
+  },
+  'AI Research Scientist':{
+    icon:'🔬',co:'Meta FAIR · NYC / Remote',
+    color:'rgba(248,113,113,0.12)',
+    badges:[{cls:'rbadge-new',txt:'✨ New'},{cls:'rbadge-match',txt:'✅ Research Track'}],
+    stats:[{v:'$200k–$400k',k:'Salary Range'},{v:'PhD or equiv',k:'Experience'},{v:'Hybrid',k:'Work Mode'},{v:'+33%',k:'YoY Growth'}],
+    overview:'AI Research Scientists at Meta FAIR (Fundamental AI Research) work on some of the most challenging open problems in AI — from self-supervised learning and world models to generative AI and embodied AI agents. You will have broad freedom to pursue long-horizon research with the compute resources of one of the world\'s top AI labs.',
+    responsibilities:['Pursue fundamental AI research with a focus on publishable, impactful contributions','Design and run large-scale experiments on Meta\'s research compute clusters','Collaborate with product teams to transfer research insights to Meta AI products','Mentor research interns and junior scientists','Present work at top-tier venues: NeurIPS, ICML, ICLR, CVPR'],
+    skills:['PyTorch','JAX','Transformers','Self-supervised Learning','Generative Models','Research Design','Academic Writing','Distributed Training'],
+    dayInLife:[{t:'10:00 AM',d:'Research group meeting — discuss new ideas on world model architectures'},{t:'11:30 AM',d:'Experiment analysis: review ablations on LeCun\'s JEPA framework variant'},{t:'1:00 PM',d:'Lunch — Meta AI all-hands (virtual)'},{t:'2:00 PM',d:'Deep work: write experiments section of NeurIPS submission'},{t:'4:30 PM',d:'Intern 1:1 — review progress on RL fine-tuning project'},{t:'6:00 PM',d:'Read arXiv, flag 3 papers for team reading group next week'}],
+    comp:[{level:'Research Scientist',base:'$220k',equity:'$180k/yr vested',bonus:'$35k',total:'~$435k'},{level:'Sr Research Scientist',base:'$290k',equity:'$240k/yr vested',bonus:'$50k',total:'~$580k'}],
+    growthRate:79
+  }
+};
+
+const RECS_DATA=[
+  {icon:'🤖',color:'rgba(77,142,255,0.12)',title:'Senior ML Engineer',co:'OpenAI · San Francisco / Remote',tags:['PyTorch','Distributed Training','RLHF','Python'],salary:'$240k–$320k',match:96,growth:'+38%',mode:'Hybrid',exp:'Senior',badge:'hot',featured:true, type:'Engineering'},
+  {icon:'🗣️',color:'rgba(34,211,238,0.1)',title:'LLM Engineer',co:'Anthropic · San Francisco',tags:['Transformers','Fine-tuning','Python','JAX'],salary:'$200k–$300k',match:93,growth:'+52%',mode:'On-site',exp:'Mid',badge:'new',featured:false, type:'Engineering'},
+  {icon:'📊',color:'rgba(20,184,166,0.1)',title:'Staff Data Scientist',co:'Stripe · Remote',tags:['Python','SQL','Causal ML','A/B Testing'],salary:'$180k–$260k',match:88,growth:'+22%',mode:'Remote',exp:'Senior',badge:'match',featured:false, type:'Data'},
+  {icon:'🎯',color:'rgba(251,191,36,0.1)',title:'AI Product Manager',co:'Google DeepMind · London',tags:['Product Strategy','ML APIs','SQL','Roadmapping'],salary:'$160k–$220k',match:85,growth:'+31%',mode:'Hybrid',exp:'Mid',badge:'match',featured:false, type:'Product'},
+  {icon:'👁️',color:'rgba(139,92,246,0.12)',title:'Computer Vision Engineer',co:'Tesla Autopilot · Palo Alto',tags:['PyTorch','CUDA','3D Vision','C++'],salary:'$190k–$280k',match:82,growth:'+27%',mode:'On-site',exp:'Mid',badge:'hot',featured:false, type:'Engineering'},
+  {icon:'🔬',color:'rgba(248,113,113,0.1)',title:'AI Research Scientist',co:'Meta FAIR · NYC / Remote',tags:['JAX','Transformers','Publications','Python'],salary:'$200k–$400k',match:79,growth:'+33%',mode:'Hybrid',exp:'Senior',badge:'new',featured:false, type:'Research'},
+];
+
+const SKILL_CATS=[
+  {name:'Programming & Tools',icon:'💻',color:'rgba(77,142,255,0.12)',skills:['Python','SQL','Git & Version Control','Cloud (AWS/GCP/Azure)','Docker & Kubernetes']},
+  {name:'Machine Learning',icon:'🧠',color:'rgba(34,211,238,0.1)',skills:['Supervised Learning','Deep Neural Networks','Model Evaluation','Feature Engineering','Transformers & LLMs']},
+  {name:'Mathematics',icon:'📐',color:'rgba(251,191,36,0.1)',skills:['Linear Algebra','Calculus','Probability & Stats','Optimisation','Information Theory']},
+  {name:'Soft Skills',icon:'🤝',color:'rgba(52,211,153,0.1)',skills:['Communication','Problem Solving','Research Skills','Team Collaboration','Project Management']},
+];
+const LEVEL_LABELS=['','Beginner','Basic','Intermediate','Advanced','Expert'];
+const skillLevels={};
+
+// Course data with real YouTube video IDs
+const COURSES=[
+  {icon:'🎓',title:'fast.ai Practical Deep Learning',desc:'Top-down, code-first deep learning. Perfect for practitioners who want results fast without endless theory.',type:'free',meta:'14 lessons · Self-paced',stars:'★★★★★',videoId:'8SF_h3xF3cE',videoTitle:'Lesson 1 — Your first model',duration:'1:57:45'},
+  {icon:'🎥',title:'Neural Nets: Zero to Hero — Karpathy',desc:'Build GPT from scratch in pure Python. The most respected free neural network course online.',type:'free',meta:'YouTube · 8 videos',stars:'★★★★★',videoId:'VMj-3S1tku0',videoTitle:'The spelled-out intro to neural networks',duration:'2:10:19'},
+  {icon:'🏫',title:'DeepLearning.AI ML Specialisation',desc:'Andrew Ng\'s classic rigorous foundations in supervised and unsupervised learning and best practices.',type:'cert',meta:'Coursera · 3 months',stars:'★★★★☆',videoId:'vStJoetOxJg',videoTitle:'What is Machine Learning? — Week 1',duration:'7:22'},
+  {icon:'🤗',title:'HuggingFace NLP Course',desc:'Fine-tune transformers, use the Datasets library, and deploy NLP models with Gradio and Spaces.',type:'free',meta:'Self-paced · Interactive',stars:'★★★★★',videoId:'00GKzGyWFEs',videoTitle:'Introduction to the Hugging Face ecosystem',duration:'12:30'},
+  {icon:'📡',title:'Full Stack Deep Learning',desc:'End-to-end ML systems: data flywheels, experiment tracking, deployment, and production monitoring.',type:'free',meta:'UC Berkeley · Video + Labs',stars:'★★★★☆',videoId:'RLemHNAO5Lw',videoTitle:'Lecture 1 — When to use ML & project setup',duration:'1:15:00'},
+  {icon:'🧠',title:'Stanford CS229 — Machine Learning',desc:'The gold-standard university ML course with rigorous mathematical foundations from Andrew Ng.',type:'free',meta:'YouTube · Full semester',stars:'★★★★★',videoId:'jGwO_UgTS7I',videoTitle:'Lecture 1 — Introduction to ML',duration:'1:17:32'},
+  {icon:'🔮',title:'Generative AI with LLMs',desc:'Build, fine-tune and deploy LLM-based applications with hands-on AWS SageMaker labs throughout.',type:'cert',meta:'Coursera · 3 weeks',stars:'★★★★☆',videoId:'2IK3DFHRFfw',videoTitle:'Week 1 — Transformer architecture deep-dive',duration:'45:00'},
+  {icon:'⚡',title:'MLOps Specialisation',desc:'ML pipelines, data validation, model monitoring, drift detection, and CI/CD for production ML systems.',type:'cert',meta:'Coursera · 4 months',stars:'★★★★☆',videoId:'Uc7GEYKOqh8',videoTitle:'Week 1 — Scoping an ML project',duration:'52:00'},
+  {icon:'🏆',title:'Kaggle Learn Micro-Courses',desc:'Bite-sized hands-on lessons in Python, Pandas, ML, Deep Learning, and feature engineering.',type:'free',meta:'5 courses · Certificates',stars:'★★★★☆',videoId:'i_LwzRVP7bg',videoTitle:'Intro to Machine Learning in 5 minutes',duration:'5:05'},
+];
+const BOOKS=[
+  {icon:'📘',title:'Hands-On ML — Aurélien Géron',desc:'The definitive practical guide to Scikit-learn, Keras, and TensorFlow with real-world projects throughout.',type:'paid',meta:'O\'Reilly · 850+ pages',stars:'★★★★★'},
+  {icon:'📗',title:'Deep Learning — Goodfellow et al.',desc:'The bible of deep learning theory. Dense, rigorous, and irreplaceable for understanding core fundamentals.',type:'free',meta:'MIT Press · Free online',stars:'★★★★★'},
+  {icon:'📙',title:'The Hundred-Page ML Book',desc:'Remarkably concise yet comprehensive overview of modern ML by Andriy Burkov. Great for revision.',type:'paid',meta:'Self-published · 160 pages',stars:'★★★★☆'},
+  {icon:'📕',title:'AI Engineering — Chip Huyen',desc:'How to build production AI systems: data pipelines, model serving, evaluation frameworks, and monitoring.',type:'paid',meta:'O\'Reilly 2024 · New!',stars:'★★★★★'},
+  {icon:'📓',title:'PRML — Bishop',desc:'The graduate-level bible for probabilistic ML. Essential for anyone on a research track.',type:'free',meta:'Microsoft Research · Free PDF',stars:'★★★★☆'},
+  {icon:'📒',title:'Mathematics for ML — Deisenroth',desc:'Fills the mathematical gaps — linear algebra, probability, and calculus through the lens of ML.',type:'free',meta:'Cambridge · Free PDF',stars:'★★★★★'},
+];
+const TOOLS=[
+  {icon:'🤗',title:'Hugging Face Hub',desc:'The GitHub of AI — thousands of pre-trained models, datasets, and Spaces for demos and deployment.',type:'free',meta:'huggingface.co',stars:'★★★★★'},
+  {icon:'⚡',title:'Weights & Biases',desc:'Experiment tracking, hyperparameter sweeps, and model registry — the standard for ML teams.',type:'free',meta:'wandb.ai · Free tier',stars:'★★★★★'},
+  {icon:'🧪',title:'Kaggle Competitions',desc:'Test your skills against 10M+ data scientists. The best portfolio-building resource available.',type:'free',meta:'kaggle.com · Free',stars:'★★★★★'},
+  {icon:'🔭',title:'Papers With Code',desc:'Every ML paper paired with its implementation. Stay current on SOTA with reproducible benchmarks.',type:'free',meta:'paperswithcode.com',stars:'★★★★★'},
+  {icon:'🚀',title:'LangChain / LlamaIndex',desc:'Build LLM apps with RAG, agents, and tool use — the standard open-source stack for LLM engineering.',type:'free',meta:'GitHub · Open source',stars:'★★★★☆'},
+  {icon:'🎛️',title:'Gradio / Streamlit',desc:'Build and share ML demos in minutes. Perfect for rapid prototyping and portfolio showcasing.',type:'free',meta:'Open source',stars:'★★★★★'},
+  {icon:'🔥',title:'PyTorch',desc:'The dominant framework for ML research and increasingly production. Master this foundational tool first.',type:'free',meta:'pytorch.org · Open source',stars:'★★★★★'},
+  {icon:'🗄️',title:'DVC — Data Version Control',desc:'Version your datasets and models like code. MLOps must-have for reproducible ML pipelines.',type:'free',meta:'dvc.org · Open source',stars:'★★★★☆'},
+  {icon:'🏗️',title:'Modal',desc:'Run ML workloads serverlessly. Deploy any Python function on GPUs with a single decorator.',type:'paid',meta:'modal.com · Pay-as-go',stars:'★★★★☆'},
+];
+const ROADMAP=[
+  {phase:'Phase 01',icon:'📐',title:'Mathematics Foundations',desc:'Linear algebra (vectors, matrices, eigenvalues), calculus (gradients, chain rule), probability and Bayesian reasoning — the bedrock everything else sits on.',chips:['Linear Algebra','Calculus','Probability','Statistics'],dur:'6–8 weeks'},
+  {phase:'Phase 02',icon:'🐍',title:'Python & Data Tools',desc:'Python fluency, NumPy, Pandas, Matplotlib. Learn to manipulate and visualise data with confidence and speed.',chips:['Python','NumPy','Pandas','Matplotlib','Jupyter'],dur:'4–6 weeks'},
+  {phase:'Phase 03',icon:'🧠',title:'Core Machine Learning',desc:'Supervised and unsupervised learning, bias-variance tradeoff, regularisation, and Scikit-learn — the essential classical toolkit.',chips:['Scikit-learn','Regression','SVM','Decision Trees','Clustering'],dur:'8–10 weeks'},
+  {phase:'Phase 04',icon:'🔥',title:'Deep Learning & Neural Nets',desc:'Feedforward networks, CNNs, RNNs, attention mechanisms, and the Transformer architecture in PyTorch.',chips:['PyTorch','CNNs','Transformers','Backpropagation','GPU Training'],dur:'10–12 weeks'},
+  {phase:'Phase 05',icon:'🎯',title:'Specialisation Track',desc:'Choose your lane: NLP & LLMs, Computer Vision, MLOps, Reinforcement Learning, or Generative AI.',chips:['NLP','LLMs','Computer Vision','MLOps','RL'],dur:'12+ weeks'},
+  {phase:'Phase 06',icon:'🚀',title:'Portfolio & Career Launch',desc:'End-to-end projects, Kaggle competitions, GitHub, technical blog posts, interview prep, and offer negotiation.',chips:['GitHub','Kaggle','System Design','ML Interviews','Networking'],dur:'Ongoing'},
+];
+
+// ═══ QUIZ ═══
+let cQ=1;
+function qNext(n){document.getElementById('qp'+n).classList.remove('active');document.getElementById('qp'+(n+1)).classList.add('active');cQ=n+1;updQProg();}
+function qBack(n){document.getElementById('qp'+n).classList.remove('active');document.getElementById('qp'+(n-1)).classList.add('active');cQ=n-1;updQProg();}
+function updQProg(){
+  const pct=Math.round(((cQ-1)/6)*100);
+  document.getElementById('qBar').style.width=pct+'%';
+  document.getElementById('qBarLbl').textContent='Question '+cQ+' of 6';
+  document.getElementById('qBarPct').textContent=pct+'%';
+  document.querySelectorAll('.qp-s').forEach(s=>{
+    const n=parseInt(s.dataset.s);s.classList.remove('active','done');
+    if(n===cQ)s.classList.add('active');if(n<cQ)s.classList.add('done');
+    s.querySelector('.qp-dot').textContent=n<cQ?'✓':n;
+  });
+}
+document.querySelectorAll('.q-opts').forEach(g=>{
+  g.querySelectorAll('.q-opt').forEach(o=>{
+    o.addEventListener('click',()=>{g.querySelectorAll('.q-opt').forEach(x=>x.classList.remove('selected'));o.classList.add('selected');});
+  });
+});
+function showQuizResult(){
+  document.querySelectorAll('.qpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('qBar').style.width='100%';
+  document.getElementById('qBarLbl').textContent='Complete!';document.getElementById('qBarPct').textContent='100%';
+  const r=QUIZ_RESULTS[Math.floor(Math.random()*QUIZ_RESULTS.length)];
+  document.getElementById('rEmoji').textContent=r.emoji;document.getElementById('rTitle').textContent=r.title;
+  document.getElementById('rDesc').textContent=r.desc;document.getElementById('rSal').textContent=r.salary;
+  document.getElementById('rGrowth').textContent=r.growth;document.getElementById('rMatch').textContent=r.match;
+  document.getElementById('rTags').innerHTML=r.tags.map(t=>`<span class="res-tag">${t}</span>`).join('');
+  document.getElementById('qResWrap').classList.add('active');
+  document.querySelectorAll('.qp-s').forEach(s=>s.classList.add('done'));
+  showToast('🎉','Quiz complete! Your career match is ready.');
+}
+function resetQuiz(){
+  document.getElementById('qResWrap').classList.remove('active');
+  document.querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('qp1').classList.add('active');cQ=1;updQProg();
+}
+
+// ═══ SKILLS ═══
+function buildSkills(){
+  const g=document.getElementById('skillGrid');
+  SKILL_CATS.forEach(cat=>{
+    const div=document.createElement('div');div.className='skill-cat glass';div.style.borderRadius='var(--radius)';
+    div.innerHTML=`<div class="skill-cat-hd"><div class="skill-cat-ic" style="background:${cat.color}">${cat.icon}</div><div><div class="skill-cat-name">${cat.name}</div><div class="skill-cat-sub">Rate 1–5</div></div></div>`;
+    cat.skills.forEach(sk=>{
+      const key=cat.name+'::'+sk;skillLevels[key]=0;
+      const itm=document.createElement('div');itm.className='skill-item';
+      const sid='s'+Math.random().toString(36).slice(2,8);
+      const lid='l'+Math.random().toString(36).slice(2,8);
+      itm.innerHTML=`<div class="skill-item-hd"><span class="skill-name">${sk}</span><div class="skill-dots" data-skill="${key}">${[1,2,3,4,5].map(i=>`<div class="sdot" data-v="${i}"></div>`).join('')}</div></div><div class="sbar"><div class="sbar-fill" id="${sid}" style="width:0%"></div></div><div class="slbl" id="${lid}">Not rated</div>`;
+      itm._sid=sid;itm._lid=lid;
+      div.appendChild(itm);
+      const dots=itm.querySelector('.skill-dots');
+      dots.querySelectorAll('.sdot').forEach(d=>{
+        d.addEventListener('click',()=>{
+          const v=parseInt(d.dataset.v);skillLevels[key]=v;
+          dots.querySelectorAll('.sdot').forEach((x,i)=>x.classList.toggle('filled',i<v));
+          document.getElementById(sid).style.width=(v/5*100)+'%';
+          document.getElementById(lid).textContent=LEVEL_LABELS[v];
+          updScore();
+        });
+      });
+    });
+    g.appendChild(div);
+  });
+}
+function updScore(){
+  const vals=Object.values(skillLevels),rated=vals.filter(v=>v>0);
+  if(!rated.length)return;
+  const avg=rated.reduce((a,b)=>a+b,0)/rated.length,pct=Math.round(avg/5*100);
+  document.getElementById('scoreNum').textContent=pct;
+  document.getElementById('scoreArc').style.strokeDashoffset=163.4*(1-pct/100);
+  const lvls=['','Beginner','Developing','Intermediate','Advanced','Expert'];
+  document.getElementById('scoreLevel').textContent=lvls[Math.round(avg)]||'Expert';
+  document.getElementById('scoreSub').textContent=rated.length+'/'+vals.length+' skills rated';
+}
+function saveSkills(){showToast('⚡','Skills saved! Loading recommendations...');setTimeout(()=>switchTab('recs'),800);}
+
+// ═══ RECS ═══
+// Active filter state
+const activeFilters = { role: 'All', exp: 'All', mode: 'All' };
+
+function buildRecs(){
+  const list=document.getElementById('recsList');
+  RECS_DATA.forEach(r=>{
+    const bc=r.badge==='hot'?'rbadge-hot':r.badge==='new'?'rbadge-new':'rbadge-match';
+    const bt=r.badge==='hot'?'🔥 Hot Role':r.badge==='new'?'✨ New':'✅ Great Match';
+    const div=document.createElement('div');
+    div.className='rec-card glass'+(r.featured?' featured':'');
+    // Store filter data as data attributes
+    div.dataset.type = r.type;
+    div.dataset.exp  = r.exp;
+    div.dataset.mode = r.mode;
+    div.style.transition = 'opacity 0.3s ease, transform 0.3s ease, max-height 0.4s ease';
+    div.innerHTML=`
+      <div class="rec-icon" style="background:${r.color}">${r.icon}</div>
+      <div>
+        <div class="rec-hd"><span class="rec-title">${r.title}</span><span class="rbadge ${bc}">${bt}</span></div>
+        <div class="rec-co">${r.co}</div>
+        <div class="rtags">${r.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
+        <div class="rmetrics">
+          <span class="rmetric">📍 ${r.mode}</span>
+          <span class="rmetric">👤 ${r.exp}</span>
+          <span class="rmetric">🗂️ <strong>${r.type}</strong></span>
+          <span class="rmetric">📈 <strong>${r.growth}</strong></span>
+        </div>
+      </div>
+      <div class="rec-right">
+        <div class="rec-sal">${r.salary}<small>per year</small></div>
+        <div class="mscore"><div class="mscore-pct">${r.match}%</div><div class="mscore-lbl">Match</div></div>
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();openRoleModal('${r.title}')">View Role →</button>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function applyFilters(){
+  const cards = document.querySelectorAll('#recsList .rec-card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const typeMatch = activeFilters.role === 'All' || card.dataset.type === activeFilters.role;
+    const expMatch  = activeFilters.exp  === 'All' || card.dataset.exp  === activeFilters.exp;
+    const modeMatch = activeFilters.mode === 'All' || card.dataset.mode === activeFilters.mode;
+    const show = typeMatch && expMatch && modeMatch;
+
+    if(show){
+      card.style.display = '';
+      requestAnimationFrame(()=>{ card.style.opacity='1'; card.style.transform='translateY(0)'; });
+      visibleCount++;
+    } else {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(8px)';
+      setTimeout(()=>{ if(card.style.opacity==='0') card.style.display='none'; }, 280);
+    }
+  });
+
+  // Show empty state if nothing matches
+  let empty = document.getElementById('recsEmpty');
+  if(visibleCount === 0){
+    if(!empty){
+      empty = document.createElement('div');
+      empty.id = 'recsEmpty';
+      empty.style.cssText = 'text-align:center;padding:3rem 1rem;color:var(--text3);font-size:0.9rem;';
+      empty.innerHTML = '<div style="font-size:2.5rem;margin-bottom:0.8rem">🔍</div><div style="color:var(--text2);font-weight:600;margin-bottom:0.3rem">No roles match these filters</div><div>Try adjusting your filters to see more results.</div>';
+      document.getElementById('recsList').appendChild(empty);
+    }
+    empty.style.display = '';
+  } else {
+    if(empty) empty.style.display = 'none';
+  }
+
+  // Update results count badge
+  let countEl = document.getElementById('recsCount');
+  if(!countEl){
+    countEl = document.createElement('div');
+    countEl.id = 'recsCount';
+    countEl.style.cssText = 'font-size:0.75rem;font-family:"JetBrains Mono",monospace;color:var(--text3);margin-bottom:1rem;';
+    document.getElementById('recsList').before(countEl);
+  }
+  countEl.textContent = `Showing ${visibleCount} of ${RECS_DATA.length} roles`;
+}
+
+function toggleChip(el){
+  const sec = el.closest('.fsec');
+  const label = sec.querySelector('.flbl').textContent.trim().toLowerCase();
+  sec.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+
+  const val = el.textContent.trim();
+
+  if(label.includes('role') || label.includes('type')){
+    // Map display text → data value
+    const map = {'All':'All','Engineering':'Engineering','Research':'Research','Product':'Product','Data':'Data'};
+    activeFilters.role = map[val] || 'All';
+  } else if(label.includes('experience')){
+    const map = {'All Levels':'All','All':'All','Entry':'Entry','Mid':'Mid','Senior':'Senior'};
+    activeFilters.exp = map[val] || 'All';
+  } else if(label.includes('work') || label.includes('mode')){
+    const map = {'All':'All','Remote':'Remote','Hybrid':'Hybrid','On-site':'On-site'};
+    activeFilters.mode = map[val] || 'All';
+  }
+
+  applyFilters();
+  const active = [activeFilters.role, activeFilters.exp, activeFilters.mode].filter(v=>v!=='All');
+  showToast('🔍', active.length ? `Filtered: ${active.join(' · ')}` : 'Showing all roles');
+}
+
+// ═══ ROLE MODAL ═══
+function openRoleModal(title){
+  const d=ROLE_DETAILS[title];if(!d)return;
+  document.getElementById('mIcon').style.background=d.color;document.getElementById('mIcon').textContent=d.icon;
+  document.getElementById('mTitle').textContent=title;document.getElementById('mCo').textContent=d.co;
+  document.getElementById('mBadges').innerHTML=d.badges.map(b=>`<span class="rbadge ${b.cls}">${b.txt}</span>`).join('');
+  document.getElementById('mStats').innerHTML=d.stats.map(s=>`<div class="mstat"><div class="mstat-v">${s.v}</div><div class="mstat-k">${s.k}</div></div>`).join('');
+  document.getElementById('mBody').innerHTML=`
+    <div class="modal-section">
+      <div class="modal-section-title">📋 Overview</div>
+      <div class="modal-desc">${d.overview}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">✅ Responsibilities</div>
+      <ul class="modal-list">${d.responsibilities.map(r=>`<li>${r}</li>`).join('')}</ul>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">🛠️ Required Skills</div>
+      <div class="modal-skills-grid">${d.skills.map(s=>`<span class="mskill">${s}</span>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">☀️ Day in the Life</div>
+      <div class="day-timeline">${d.dayInLife.map(i=>`<div class="day-item"><div class="day-time">${i.t}</div><div class="day-desc">${i.d}</div></div>`).join('')}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">📈 Demand Trend</div>
+      <div class="modal-desc">This role is seeing strong and sustained demand growth.</div>
+      <div class="growth-bar"><div class="growth-bar-fill" style="width:${d.growthRate}%"></div></div>
+      <div style="font-size:0.72rem;color:var(--text3);margin-top:0.3rem;font-family:'JetBrains Mono',monospace;">Demand score: ${d.growthRate}/100</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">💰 Compensation Breakdown</div>
+      <table class="comp-table">
+        <thead><tr><th>Level</th><th>Base</th><th>Equity</th><th>Bonus</th><th>Total</th></tr></thead>
+        <tbody>${d.comp.map(c=>`<tr><td class="highlight">${c.level}</td><td>${c.base}</td><td>${c.equity}</td><td>${c.bonus}</td><td class="highlight">${c.total}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:0.7rem;margin-top:1.5rem;flex-wrap:wrap;">
+      <button class="btn btn-primary btn-sm">Apply Now →</button>
+      <button class="btn btn-glass btn-sm" onclick="switchTab('resources');closeRoleModalBtn()">📚 See Learning Path</button>
+      <button class="btn btn-glass btn-sm" onclick="switchTab('skills');closeRoleModalBtn()">⚡ Assess My Fit</button>
+    </div>`;
+  document.getElementById('roleModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeRoleModal(e){if(e.target===document.getElementById('roleModal'))closeRoleModalBtn();}
+function closeRoleModalBtn(){document.getElementById('roleModal').classList.remove('open');document.body.style.overflow='';}
+
+// ═══ RESOURCES ═══
+function buildResources(){
+  buildCourses();buildGrid('booksGrid',BOOKS);buildGrid('toolsGrid',TOOLS);buildRoadmap();
+}
+function buildCourses(){
+  const g=document.getElementById('coursesGrid');
+  COURSES.forEach(c=>{
+    const tc=c.type==='free'?'type-free':c.type==='cert'?'type-cert':'type-paid';
+    const tl=c.type==='free'?'Free':c.type==='cert'?'Certificate':'Paid';
+    const div=document.createElement('div');div.className='course-card glass';
+    div.innerHTML=`
+      <div class="course-thumb">
+        <iframe src="https://www.youtube.com/embed/${c.videoId}?rel=0&modestbranding=1" title="${c.videoTitle}" loading="lazy"></iframe>
+        <div class="course-thumb-overlay" onclick="openVideoModal('${c.videoId}','${c.title.replace(/'/g,"\\'")} — ${c.videoTitle.replace(/'/g,"\\'")}')">
+          <div class="play-btn">▶</div>
+        </div>
+        <div class="course-duration">${c.duration}</div>
+      </div>
+      <div class="course-body">
+        <div class="course-top"><span class="course-icon">${c.icon}</span><span class="ctype-badge ${tc}">${tl}</span></div>
+        <div class="course-title">${c.title}</div>
+        <div class="course-desc">${c.desc}</div>
+        <div class="course-meta"><span class="course-meta-l">${c.meta}</span><span class="course-stars">${c.stars}</span></div>
+      </div>`;
+    g.appendChild(div);
+  });
+}
+function buildGrid(id,data){
+  const g=document.getElementById(id);
+  data.forEach(item=>{
+    const tc=item.type==='free'?'type-free':item.type==='cert'?'type-cert':'type-paid';
+    const tl=item.type==='free'?'Free':item.type==='cert'?'Certificate':'Paid';
+    const d=document.createElement('div');d.className='item-card glass';
+    d.onclick=()=>showToast('📚','Opening: '+item.title);
+    d.innerHTML=`<div class="item-top"><span class="item-icon">${item.icon}</span><span class="ctype-badge ${tc}">${tl}</span></div><div class="item-title">${item.title}</div><div class="item-desc">${item.desc}</div><div class="item-meta"><span class="item-meta-l">${item.meta}</span><span class="item-stars">${item.stars}</span></div>`;
+    g.appendChild(d);
+  });
+}
+function buildRoadmap(){
+  const list=document.getElementById('rmList');
+  ROADMAP.forEach(item=>{
+    const d=document.createElement('div');d.className='rm-item';
+    d.innerHTML=`<div class="rm-line"><div class="rm-circle">${item.icon}</div><div class="rm-connector"></div></div><div class="rm-content"><div class="rm-phase">${item.phase}</div><div class="rm-title">${item.title}</div><div class="rm-dur">${item.dur}</div><div class="rm-desc">${item.desc}</div><div class="rm-chips">${item.chips.map(c=>`<span class="rm-chip">${c}</span>`).join('')}</div></div>`;
+    list.appendChild(d);
+  });
+}
+function switchResTab(n){
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.toggle('active',t.dataset.rt===n));
+  document.querySelectorAll('.rcat').forEach(c=>c.classList.toggle('active',c.id==='rt-'+n));
+}
+
+// ═══ VIDEO MODAL ═══
+function openVideoModal(id,title){
+  document.getElementById('vModalTitle').textContent=title;
+  document.getElementById('vModalIframe').src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeVideoModal(e){if(e.target===document.getElementById('videoModal'))closeVideoModalBtn();}
+function closeVideoModalBtn(){
+  document.getElementById('videoModal').classList.remove('open');
+  document.getElementById('vModalIframe').src='';
+  document.body.style.overflow='';
+}
+
+// ═══ TAB SWITCH ═══
+function switchTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  document.getElementById('tab-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══ TOAST ═══
+function showToast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ═══ COUNTERS ═══
+function animC(id,target,delay=0){
+  setTimeout(()=>{
+    let v=0;const step=Math.ceil(target/50);
+    const t=setInterval(()=>{v=Math.min(v+step,target);document.getElementById(id).textContent=v;if(v>=target)clearInterval(t);},22);
+  },delay);
+}
+const io=new IntersectionObserver(e=>{
+  e.forEach(x=>{if(x.isIntersecting){
+    animC('c1',42);animC('c2',127);animC('c3',12);
+    animC('sc1',42,100);animC('sc2',127,200);animC('sc3',12,300);animC('sc4',8,400);
+    io.disconnect();
+  }});
+},{threshold:0.2});
+const hs=document.querySelector('.hero-stats');if(hs)io.observe(hs);
+
+// INIT
+buildSkills();buildRecs();buildResources();
+</script>
+<!-- IBM Watson Assistant - NeuralPath Career Bot -->
+<script>
+  window.watsonAssistantChatOptions = {
+    integrationID: "4e66004a-04bd-41dd-914a-d44689921d83",
+    region: "au-syd",
+    serviceInstanceID: "ab85778d-bfb0-4851-978c-fe17cc9fba29",
+    onLoad: async (instance) => {
+      await instance.render();
+    }
+  };
+  setTimeout(function(){
+    const t = document.createElement('script');
+    t.src = "https://web-chat.global.assistant.watson.appdomain.cloud/versions/latest/WatsonAssistantChatEntry.js";
+    document.head.appendChild(t);
+  });
+</script>
+</script>
+<a href="https://wa.me/14155238886" target="_blank" 
+style="position:fixed; bottom:20px; left:20px; background:#25D366; 
+color:white; padding:15px 20px; border-radius:50px; 
+text-decoration:none; font-size:16px; z-index:9999;">
+💬 Chat on WhatsApp
+</a>
+</body>
+</html>
